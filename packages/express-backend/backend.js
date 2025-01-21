@@ -38,9 +38,10 @@ const users = {
     }
   ]
 };
-const findUserByName = (name) => {
+const findUserByNameAndJob = (name, job) => {
   return users["users_list"].filter(
-    (user) => user["name"] === name
+    (user) => user["name"] === name && user["job"] === job
+
   );
 };
 
@@ -54,8 +55,9 @@ const addUser = (user) => {
 
 app.get("/users", (req, res) => {
   const name = req.query.name;
+  const job = req.query.job;
   if (name != undefined) {
-    let result = findUserByName(name);
+    let result = findUserByNameAndJob(name, job);
     result = { users_list: result };
     res.send(result);
   } else {
