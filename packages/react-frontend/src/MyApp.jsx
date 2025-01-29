@@ -29,12 +29,21 @@ function MyApp() {
     const updated = characters.filter((character, i) => {
       return i !== index;
     });
-    setCharacters(updated);
+    const id = characters[index].id
+    const promise = fetch("Http://localhost:8000/users/" + id, {
+      method: "DELETE"
+    })
+    return promise.then (
+      (res) => {
+        if (res.status == 204) 
+          setCharacters(updated);
+      }
+    )
   }
 
   function updateList(person) {
     postUser(person)
-      .then(() => setCharacters([...characters, person]))
+      .then((v) => setCharacters([...characters, v]))
       .catch((error) => {
         console.log(error);
       });
@@ -62,7 +71,12 @@ function MyApp() {
       body: JSON.stringify(person)
     });
   
-    return promise;
+    return promise.then(
+      (res) => {
+        if (res.status == 201) 
+          return res.json()
+      }
+    )
   }
 
   return (

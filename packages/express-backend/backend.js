@@ -1,9 +1,9 @@
 // backend.js
 import express from "express";
 import cors from "cors";
+
 const app = express();
 const port = 8000;
-
 app.use(cors());
 app.use(express.json());
 
@@ -49,15 +49,21 @@ const findUserByNameAndJob = (name, job) => {
 const findUserById = (id) =>
   users["users_list"].find((user) => user["id"] === id);
 
+const genterateId = () => {
+  return Math.random().toString();
+}
+
 const addUser = (user) => {
-  users["users_list"].push(user);
-  return user;
+  const id = genterateId();
+  const completeuser = {id , ... user}
+  users["users_list"].push(completeuser);
+  return completeuser;
 };
 
 app.get("/users", (req, res) => {
   const name = req.query.name;
   const job = req.query.job;
-  if (name != undefined) {
+  if (name != undefined && job != undefined) {
     let result = findUserByNameAndJob(name, job);
     result = { users_list: result };
     res.send(result);
@@ -77,8 +83,8 @@ app.get("/users/:id", (req, res) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  const user = addUser(userToAdd);
+  res.status(201).send(user);
 });
 
 app.delete("/users/:id", (req, res) => {
@@ -89,6 +95,7 @@ app.delete("/users/:id", (req, res) => {
   } else {
     const location = users.users_list.findIndex(user => user.id == id);
     users.users_list.splice(location, 1);
+    res.status(204).send()
   }
 });
 
